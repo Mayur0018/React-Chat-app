@@ -6,7 +6,9 @@ import MessageForm from './MessageForm';
 const ChatFeed = (props) => {
   const { chats, activeChat, userName, messages } = props;
 
-  const chat = chats && chats[activeChat];
+  if (!chats || !activeChat) return <div />;
+
+  const chat = chats[activeChat];
 
   const renderReadReceipts = (message, isMyMessage) => chat.people.map((person, index) => {
     const isOnline = person.status === 'online'; // Assuming `status` field indicates online status
@@ -17,7 +19,7 @@ const ChatFeed = (props) => {
         className="read-receipt"
         style={{
           float: isMyMessage ? 'right' : 'left',
-          backgroundImage: person.person.avatar && `url(${person.person.avatar})`,
+          backgroundImage: person.person.avatar ? `url(${person.person.avatar})` : 'none',
         }}
       >
         <div
@@ -58,7 +60,7 @@ const ChatFeed = (props) => {
   return (
     <div className="chat-feed">
       <div className="chat-title-container">
-        <div className="chat-title">{chat?.title}</div>
+        <div className="chat-title">{chat.title}</div>
         <div className="chat-subtitle">
           {chat.people.map((person) => ` ${person.person.username}`)}
         </div>
@@ -73,10 +75,15 @@ const ChatFeed = (props) => {
 };
 
 ChatFeed.propTypes = {
-  chats: PropTypes.object.isRequired,
-  activeChat: PropTypes.string.isRequired,
+  chats: PropTypes.object,
+  activeChat: PropTypes.string, // No longer required
   userName: PropTypes.string.isRequired,
   messages: PropTypes.object.isRequired,
+};
+
+ChatFeed.defaultProps = {
+  chats: {},
+  activeChat: '', // Default value for activeChat
 };
 
 export default ChatFeed;
